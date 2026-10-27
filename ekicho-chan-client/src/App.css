@@ -1,0 +1,351 @@
+.App {
+  text-align: center;
+}
+
+.title {
+  font-family: "メイリオ", "游ゴシック", sans-serif;
+  position: relative;
+  padding: 0.25em 0;
+  border-bottom: solid 2px #ebc000;
+  z-index: 0;
+}
+
+.title_mobile {
+  margin-right: 40px;
+  font-size: 20px;
+  font-family: "メイリオ", "游ゴシック", sans-serif;
+  position: relative;
+  padding: 0.25em 0;
+  border-bottom: solid 2px #eb6100;
+  z-index: 0;
+}
+
+.browser_height {
+  height: 100vh;
+}
+
+.station-scene {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background-color: #f7f2e8;
+}
+
+.station-scene__image,
+.station-scene__veil {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.station-scene__image {
+  z-index: 0;
+}
+
+.station-scene__veil {
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.station-scene__content {
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+}
+
+/* ガチャGETボタン */
+.get_btn {
+  font-size: 28px;
+  width: 150px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 100px;
+  text-align: center;
+  font-weight: bold;
+  padding: 20px 15px;
+  color: #fff;
+  background-color: #CC9933;
+  border: #AA0000 solid 3px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  border-radius: 30px;
+  -webkit-transform: perspective(2px) translateZ(0);
+  transform: perspective(2px) translateZ(0);
+  z-index: 0;
+}
+
+/* アニメーション */
+@-webkit-keyframes hvr-pulse {
+  25% {
+    -webkit-transform: scale(1.1);
+    transform: scale(1.1);
+  }
+
+  75% {
+    -webkit-transform: scale(0.9);
+    transform: scale(0.9);
+  }
+}
+
+@keyframes hvr-pulse {
+  25% {
+    -webkit-transform: scale(1.1);
+    transform: scale(1.1);
+  }
+
+  75% {
+    -webkit-transform: scale(0.9);
+    transform: scale(0.9);
+  }
+}
+
+/* マウスオーバー時 */
+.get_btn:hover,
+.get_btn:focus,
+.get_btn:active {
+  -webkit-animation-name: hvr-pulse;
+  animation-name: hvr-pulse;
+  -webkit-animation-duration: 0.4s;
+  animation-duration: 0.4s;
+  -webkit-animation-timing-function: linear;
+  animation-timing-function: linear;
+  -webkit-animation-iteration-count: infinite;
+  animation-iteration-count: infinite;
+  cursor: pointer;
+}
+
+/* 位置情報GETボタン */
+.location_get_btn {
+  font-size: 28px;
+  width: 150px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  font-weight: bold;
+  padding: 20px 15px;
+  color: #fff;
+  background-color: #CC9933;
+  border: #AA0000 solid 3px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  border-radius: 30px;
+  -webkit-transform: perspective(2px) translateZ(0);
+  transform: perspective(2px) translateZ(0);
+  z-index: 0;
+}
+
+/* アニメーション */
+@-webkit-keyframes hvr-pulse {
+  25% {
+    -webkit-transform: scale(1.1);
+    transform: scale(1.1);
+  }
+
+  75% {
+    -webkit-transform: scale(0.9);
+    transform: scale(0.9);
+  }
+}
+
+@keyframes hvr-pulse {
+  25% {
+    -webkit-transform: scale(1.1);
+    transform: scale(1.1);
+  }
+
+  75% {
+    -webkit-transform: scale(0.9);
+    transform: scale(0.9);
+  }
+}
+
+/* マウスオーバー時 */
+.location_get_btn:hover,
+.location_get_btn:focus,
+.location_get_btn:active {
+  -webkit-animation-name: hvr-pulse;
+  animation-name: hvr-pulse;
+  -webkit-animation-duration: 0.4s;
+  animation-duration: 0.4s;
+  -webkit-animation-timing-function: linear;
+  animation-timing-function: linear;
+  -webkit-animation-iteration-count: infinite;
+  animation-iteration-count: infinite;
+  cursor: pointer;
+}
+
+/* 駅選択オートコンプリート */
+.station_list {
+  display: inline-block;
+  text-align: center;
+  margin-top: 50px;
+  width: 220px;
+}
+
+/* BOX */
+.box {
+  border: #000000 solid 10px;
+  position: relative;
+}
+
+/* GET済み */
+.second_get {
+  color: #888888;
+  font-weight: 600;
+}
+
+/* 初GET */
+.first_get {
+  background: linear-gradient(45deg, #B67B03 0%, #DAAF08 45%, #FEE9A0 70%, #DAAF08 85%, #B67B03 90% 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 800;
+}
+
+/* 画像表示 */
+.imgae {
+  position: relative;
+  justify-content: center;
+}
+
+/* レア度星の表示 */
+.image p {
+  position: absolute;
+  width: auto;
+  top: 90%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  margin: 0;
+  padding: 0;
+}
+
+/* 画像の枠線 */
+.image-n {
+  border: #000000 solid 10px;
+  position: relative;
+}
+
+.image-hn {
+  border: #0fc74c solid 10px;
+  position: relative;
+}
+
+.image-r {
+  border: #7c5830 solid 10px;
+  position: relative;
+}
+
+.image-sr {
+  border: #ff4500 solid 10px;
+  position: relative;
+}
+
+.image-ssr {
+  border: #ffd700 solid 10px;
+  position: relative;
+}
+
+/* 六角形 */
+.hexagon {
+  /* margin-top: 40px; */
+  width: 17.3%;
+  height: 10%;
+  background: #0c33e0;
+  position: absolute;
+  top: 6%;
+  left: 4px;
+  /* border-left: #000000 solid 1px;
+  border-right: #000000 solid 1px; */
+}
+
+.hexagon .text_desktop {
+  height: 100%;
+  font-size: 50px;
+  font-weight: bold;
+  color: #ffd700;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: absolute;
+  left: 50%;
+  right: 50%;
+  z-index: 1;
+}
+
+.hexagon .text_mobile {
+  height: 100%;
+  font-size: 20px;
+  font-weight: bold;
+  color: #ffd700;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: absolute;
+  left: 50%;
+  right: 50%;
+  z-index: 1;
+}
+
+.hexagon::before,
+.hexagon::after {
+  content: "";
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: #0c33e0;
+  /* border-left: #000000 solid 1px;
+  border-right: #000000 solid 1px; */
+  z-index: 0;
+}
+
+.hexagon::before {
+  transform: rotate(60deg);
+}
+
+.hexagon::after {
+  transform: rotate(-60deg);
+}
+
+/* ダイアログの表示テキスト */
+.station_name {
+  display: flex;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.station_name .desktop {
+  font-size: 26px;
+}
+
+.station_name .mobile {
+  font-size: 20px;
+}
+
+/* 閲覧ページのカード */
+.card_image {
+  cursor: pointer;
+}
+
+.card_image_text {
+  font-size: 15px;
+  font-weight: bold;
+}
+
+/** ログインページ */
+.login_button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}

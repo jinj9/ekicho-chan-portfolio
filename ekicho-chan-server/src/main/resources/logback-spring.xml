@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE logback>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <target>System.out</target>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%d{yyyy/MM/dd HH:mm:ss} %-5level [%thread] - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <springProfile name="local">
+        <property name="LOG_PATH" value="${LOG_FILE_PATH:-./log}" />
+        <appender name="APPLICATION_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${LOG_PATH}/ekicho-chan_application.log</file>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${LOG_PATH}/ekicho-chan_application_bk-%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+                <maxHistory>3</maxHistory>
+            </rollingPolicy>
+            <encoder>
+                <charset>UTF-8</charset>
+                <pattern>%d{yyyy/MM/dd HH:mm:ss} %-5level [%thread] - %msg%n</pattern>
+            </encoder>
+        </appender>
+        <logger name="appLogger" level="INFO" />
+        <root level="INFO">
+            <appender-ref ref="STDOUT" />
+            <appender-ref ref="APPLICATION_LOG" />
+        </root>
+    </springProfile>
+
+    <springProfile name="!local">
+        <logger name="appLogger" level="INFO" />
+        <root level="INFO">
+            <appender-ref ref="STDOUT" />
+        </root>
+    </springProfile>
+</configuration>

@@ -1,0 +1,76 @@
+name: ekicho-chan-dev
+
+services:
+  postgres:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env before starting}
+      APP_DB_PASSWORD: ${SPRING_DB_PASSWORD:?Set SPRING_DB_PASSWORD in .env before starting}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pg17-data:/var/lib/postgresql/data
+      - type: bind
+        source: ./init-public
+        target: /docker-entrypoint-initdb.d
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ./seed
+        target: /seed
+        read_only: true
+        bind:
+          create_host_path: false
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U postgres -d ekicho_chan_local"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 60s
+
+  mailpit:
+    image: axllent/mailpit:v1.30.0
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:1025:1025"
+      - "127.0.0.1:8025:8025"
+
+  spring:
+    build:
+      context: ../ekicho-chan-server
+      dockerfile: Dockerfile
+    image: ekicho-chan-spring:local
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+    environment:
+      SPRING_PROFILES_ACTIVE: production
+      DB_URL: jdbc:postgresql://postgres:5432/ekicho_chan_local
+      DB_USERNAME: ekicho1
+      DB_PASSWORD: ${SPRING_DB_PASSWORD:?Set SPRING_DB_PASSWORD in .env before starting}
+      MAIL_HOST: mailpit
+      MAIL_PORT: 1025
+      MAIL_USERNAME: local
+      MAIL_PASSWORD: local
+      MAIL_FROM: no-reply@ekicho-chan.local
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:3000,http://127.0.0.1:3000}
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: "false"
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: "false"
+      SERVER_SERVLET_SESSION_COOKIE_SECURE: "false"
+    ports:
+      - "${SPRING_BIND_ADDRESS:-127.0.0.1}:${SPRING_PORT:-18080}:8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
+volumes:
+  pg17-data:

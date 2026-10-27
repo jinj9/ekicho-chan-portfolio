@@ -1,0 +1,16 @@
+# Deny by default, then include only files required to build the application.
+**
+!Dockerfile
+!.dockerignore
+!gradlew
+!build.gradle
+!settings.gradle
+!gradle/**
+!src/**
+
+# Never copy machine-local credentials/configuration into the image.
+src/main/resources/application-local.properties
+**/.env
+**/.env.*
+**/application-secret.properties
+**/*.log

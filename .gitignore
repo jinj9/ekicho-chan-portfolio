@@ -1,0 +1,48 @@
+# Secrets and machine-specific configuration
+**/.env
+**/.env.*
+!**/.env.example
+!**/.env.production.example
+**/local.properties
+**/*secret*.properties
+aws-info/
+signing/
+sts*-workspace/
+
+# Android signing and distributables
+**/*.jks
+**/*.keystore
+**/*.p12
+**/*.pfx
+**/*.apk
+**/*.aab
+**/APK-INFO.txt
+**/app/release/
+
+# Database backups
+**/backup/
+**/backups/
+**/*.dump
+
+# Logs
+**/log/
+**/*.log
+**/*.log.*
+**/*application*.zip
+
+# Generated files and IDE metadata
+**/build/
+**/bin/
+**/.gradle/
+**/.kotlin/
+**/.pnpm-store/
+**/node_modules/
+**/.idea/
+**/.settings/
+**/.classpath
+**/.project
+**/out/
+**/coverage/
+
+# Private operational documentation
+/docs/EKICHO_CHAN_STARTUP_GUIDE.md
