@@ -14,6 +14,7 @@ import { AuthProvider } from './context/AuthContext';
 import { AdminRoute, ProtectedRoute, PublicOnlyRoute } from './components/AuthRoute';
 import MyPage from './components/MyPage';
 import StationSceneBackground from './components/StationSceneBackground';
+import { PORTFOLIO_MODE } from './portfolioMode';
 
 function App() {
 
@@ -45,18 +46,22 @@ function App() {
         <StationSceneBackground>
           <Header menuTitle={getMenuTitle()} isDesktop={isDesktop} />
           <Routes>
-            <Route element={<PublicOnlyRoute />}>
-              <Route path='/login' element={<LoginPage />} />
-            </Route>
+            {!PORTFOLIO_MODE && (
+              <Route element={<PublicOnlyRoute />}>
+                <Route path='/login' element={<LoginPage />} />
+              </Route>
+            )}
             <Route element={<ProtectedRoute />}>
               <Route path='/' element={<GachaGetPage />} />
               <Route path='/home' element={<HomePage />} />
               <Route path='/location' element={<LocationGetPage />} />
               <Route path='/watching' element={<WatchingPage />} />
-              <Route path='/mypage' element={<MyPage />} />
-              <Route element={<AdminRoute />}>
-                <Route path='/admin' element={<AdminPage />} />
-              </Route>
+              {!PORTFOLIO_MODE && <Route path='/mypage' element={<MyPage />} />}
+              {!PORTFOLIO_MODE && (
+                <Route element={<AdminRoute />}>
+                  <Route path='/admin' element={<AdminPage />} />
+                </Route>
+              )}
             </Route>
           </Routes>
           {isDesktop ? (<></>) : (<Footer />)}

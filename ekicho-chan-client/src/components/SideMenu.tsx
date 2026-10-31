@@ -5,6 +5,8 @@ import { useAuthContext, useAuthActions } from '../context/AuthContext';
 import Loading from './Loading';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useNavigate } from 'react-router-dom';
+import { PORTFOLIO_MODE } from '../portfolioMode';
+import { clearPortfolioCollection } from '../portfolio/storage';
 
 type Props = {
   isSideMenuOpen: boolean;
@@ -43,6 +45,14 @@ const SideMenu: React.FC<Props> = ({ isSideMenuOpen, isSideMenuClose }) => {
     }
   }
 
+  const handleReset = () => {
+    if (!confirm('このブラウザに保存した獲得データをすべて削除しますか？')) return;
+    clearPortfolioCollection();
+    isSideMenuClose(false);
+    navigate('/home', { replace: true });
+    alert('獲得データをリセットしました。');
+  };
+
   if (isLoading) {
     return (
       <div>
@@ -62,7 +72,7 @@ const SideMenu: React.FC<Props> = ({ isSideMenuOpen, isSideMenuClose }) => {
         <div className='inner'>
           <ul className='menu_links'>
             {
-              loggedUserInfo ? (
+              !PORTFOLIO_MODE && loggedUserInfo ? (
                 <li className="profile_menu_item">
                   <a className="profile_card" href="/mypage" onClick={handleClick} title="マイページを開く">
                     <AccountCircleIcon className="profile_icon" aria-hidden="true" />
@@ -76,16 +86,19 @@ const SideMenu: React.FC<Props> = ({ isSideMenuOpen, isSideMenuClose }) => {
                 <></>
               )
             }
-            {!loggedUserInfo ? <li><a href="/login">ログイン</a></li> : <></>}
+            {!PORTFOLIO_MODE && !loggedUserInfo ? <li><a href="/login">ログイン</a></li> : <></>}
             <li><a href="/home">ホーム</a></li>
-            {loggedUserInfo ? <li><a href="/mypage">マイページ</a></li> : <></>}
+            {!PORTFOLIO_MODE && loggedUserInfo ? <li><a href="/mypage">マイページ</a></li> : <></>}
             <li><a href="/">ガチャでGETする</a></li>
             <li><a href="/location">位置情報でGETする</a></li>
             <li><a href="/watching">えきちょーちゃんを見る</a></li>
-            {loggedUserInfo ? (
+            {!PORTFOLIO_MODE && loggedUserInfo ? (
               <li><button type="button" className="side_menu_action" onClick={handleLogout}>ログアウト</button></li>
             ) : <></>}
-            {loggedUserInfo?.role === 'ADMIN' ? <li><a href="/admin" style={{ backgroundColor: '#EEEEEE' }}>管理者</a></li> : <></>}
+            {PORTFOLIO_MODE && (
+              <li><button type="button" className="side_menu_action" onClick={handleReset}>保存データをリセット</button></li>
+            )}
+            {!PORTFOLIO_MODE && loggedUserInfo?.role === 'ADMIN' ? <li><a href="/admin" style={{ backgroundColor: '#EEEEEE' }}>管理者</a></li> : <></>}
           </ul>
         </div>
       </nav>

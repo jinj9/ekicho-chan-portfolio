@@ -8,6 +8,9 @@ import WatchingImageDialog from './WatchingImageDialog';
 import Loading from './Loading';
 import apiClient from '../api/apiClient';
 import { PREFECTURE_LIST } from './Const';
+import { PORTFOLIO_MODE } from '../portfolioMode';
+import { getPortfolioStation } from '../api/portfolioApi';
+import { readPortfolioCollection } from '../portfolio/storage';
 
 type StationMaster = {
   id: number | undefined;
@@ -54,6 +57,34 @@ const WatchingPage = () => {
   const search = async (targetPage = 0) => {
     setIsLoading(true);
     try {
+      if (PORTFOLIO_MODE) {
+        const records = readPortfolioCollection();
+        const values = await Promise.all(records.map(async record => ({
+          ...await getPortfolioStation(record.stationId, record.lastObtainedMethod),
+          gettingDate: new Date(record.lastObtainedAt).toLocaleDateString('ja-JP'),
+          obtainedAt: record.lastObtainedAt,
+        })));
+        const prefectureName = PREFECTURE_LIST.find(
+          item => String(item.prefectureCd) === prefectureCd)?.label;
+        const filtered = values.filter(value =>
+          (!prefectureName || value.locationName === prefectureName)
+          && (!stationName.trim() || value.stationName.includes(stationName.trim()))
+          && (!appearanceRateCd || value.appearanceRateCd === appearanceRateCd));
+        filtered.sort((a, b) => {
+          if (sort === 'station') return a.stationName.localeCompare(b.stationName, 'ja');
+          const compared = a.obtainedAt.localeCompare(b.obtainedAt);
+          return sort === 'oldest' ? compared : -compared;
+        });
+        const size = 12;
+        const safePage = Math.max(targetPage, 0);
+        const pageValues = filtered.slice(safePage * size, (safePage + 1) * size);
+        setStations(pageValues);
+        setPage(safePage);
+        setTotalPages(Math.ceil(filtered.length / size));
+        setTotalElements(filtered.length);
+        setIsSearched(true);
+        return;
+      }
       const response = await apiClient.get<ObtainedPage>('/api/v1/web/stations/obtained', {
         params: { page: targetPage, size: 12, prefectureCd, stationName: stationName.trim(), appearanceRateCd, sort },
       });

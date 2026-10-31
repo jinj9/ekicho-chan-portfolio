@@ -4,10 +4,12 @@ import Loading from './Loading';
 import ImageDialog from './ImageDialog';
 import { useMediaQuery } from 'react-responsive';
 import { Box, FormControl, Grid, InputLabel, MenuItem, Select } from '@mui/material';
-import { AxiosResponse } from 'axios';
 import { PREFECTURE_LIST } from './Const';
 import ComStationSelect from './ComStationSelect';
 import apiClient from '../api/apiClient';
+import { PORTFOLIO_MODE } from '../portfolioMode';
+import { obtainPortfolioStationAtLocation } from '../api/portfolioApi';
+import { recordPortfolioObtained } from '../portfolio/storage';
 
 type locationInfo = {
   latitude: number | null;
@@ -74,13 +76,18 @@ const LocationGetPage = () => {
 
     const getStationData = async (locationInfo: locationInfo) => {
       try {
-        const response: AxiosResponse<stationMaster> = await apiClient.post(
-          '/api/v1/web/stations/location-get', {
-          stationCd: locationGetParam.stationCd,
-          latitude: locationInfo.latitude,
-          longitude: locationInfo.longitude,
-        });
-        setStationData(response.data);
+        const data = PORTFOLIO_MODE
+          ? await obtainPortfolioStationAtLocation(
+              locationGetParam.stationCd, locationInfo.latitude, locationInfo.longitude)
+          : (await apiClient.post<stationMaster>('/api/v1/web/stations/location-get', {
+              stationCd: locationGetParam.stationCd,
+              latitude: locationInfo.latitude,
+              longitude: locationInfo.longitude,
+            })).data;
+        if (PORTFOLIO_MODE && data.id !== undefined) {
+          data.isObtained = recordPortfolioObtained(data.id, 'LOCATION');
+        }
+        setStationData(data);
         setIsDialogOpen(true);
         setTimeout(
           () => {
@@ -89,7 +96,7 @@ const LocationGetPage = () => {
           500
         );
       } catch (e: any) {
-        if (e.response.data.message !== undefined) {
+        if (e.response?.data?.message !== undefined) {
           alert(e.response.data.message);
         } else if (e.response !== undefined && e.response.data.status === 400) {
           alert(e.response.data.status + ":リクエストエラーです。");

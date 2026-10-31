@@ -11,6 +11,7 @@ import SideMenu from './SideMenu';
 import '../SideMenu.css';
 import { useAuthContext, useAuthActions } from '../context/AuthContext';
 import Loading from './Loading';
+import { PORTFOLIO_MODE } from '../portfolioMode';
 
 const theme = createTheme({
   palette: {
@@ -112,7 +113,7 @@ const Header: React.FC<Props> = ({
                 {menuTitle}
               </Typography>
               {
-                isDesktop ? (
+                isDesktop && !PORTFOLIO_MODE ? (
                   loggedUserInfo ? (
                     <Button
                       color="inherit"
@@ -128,7 +129,7 @@ const Header: React.FC<Props> = ({
                       ログイン
                     </Button>
                   )
-                ) : (
+                ) : !isDesktop ? (
                   <div className='menu_icon'>
                     <IconButton
                       // size="small"
@@ -141,6 +142,8 @@ const Header: React.FC<Props> = ({
                       <MenuIcon />
                     </IconButton>
                   </div>
+                ) : (
+                  <></>
                 )
               }
             </Toolbar>

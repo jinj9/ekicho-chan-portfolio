@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { API_PATH } from '../components/Const';
+import { PORTFOLIO_MODE } from '../portfolioMode';
 
 export const SESSION_EXPIRED_EVENT = 'ekicho-auth-session-expired';
 
@@ -17,7 +18,8 @@ const csrfToken = () => document.cookie
 
 client.interceptors.request.use(async config => {
   const method = config.method?.toUpperCase() || 'GET';
-  if (!['GET', 'HEAD', 'OPTIONS'].includes(method)) {
+  const portfolioRequest = PORTFOLIO_MODE && config.url?.startsWith('/api/v1/portfolio/');
+  if (!portfolioRequest && !['GET', 'HEAD', 'OPTIONS'].includes(method)) {
     await fetch(`${API_PATH}/api/v1/web/auth/csrf`, { credentials: 'include' });
     config.headers.set('X-XSRF-TOKEN', decodeURIComponent(csrfToken() || ''));
   }

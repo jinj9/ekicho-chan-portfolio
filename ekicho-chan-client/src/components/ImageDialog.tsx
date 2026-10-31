@@ -12,11 +12,13 @@ import {
   Tooltip
 } from '@mui/material';
 import { BsStar, BsStarFill } from 'react-icons/bs';
-import { AxiosResponse } from "axios";
 import Loading from "./Loading";
 import { FaCircleInfo } from "react-icons/fa6";
 import apiClient from '../api/apiClient';
 import AppButton from './AppButton';
+import { PORTFOLIO_MODE } from '../portfolioMode';
+import { drawPortfolioStation } from '../api/portfolioApi';
+import { recordPortfolioObtained } from '../portfolio/storage';
 
 type Props = {
   isOpen: boolean;
@@ -83,8 +85,13 @@ const ImageDialog: React.FC<Props> = ({
     setIsLoading(true);
     const getStationData = async () => {
       try {
-        const response: AxiosResponse<stationMaster> = await apiClient.get('/api/v1/web/stations/gacha');
-        setStationData(response.data);
+        const data = PORTFOLIO_MODE
+          ? await drawPortfolioStation()
+          : (await apiClient.get<stationMaster>('/api/v1/web/stations/gacha')).data;
+        if (PORTFOLIO_MODE && data.id !== undefined) {
+          data.isObtained = recordPortfolioObtained(data.id, 'GACHA');
+        }
+        setStationData(data);
         setTimeout(
           () => {
             setIsLoading(false);

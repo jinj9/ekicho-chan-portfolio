@@ -32,8 +32,23 @@ import java.util.List;
 public class ApiSecurityConfig {
     @Bean
     SecurityFilterChain apiSecurity(HttpSecurity http,
-            UrlBasedCorsConfigurationSource corsConfigurationSource) throws Exception {
-        http.authorizeHttpRequests(rules -> rules
+            UrlBasedCorsConfigurationSource corsConfigurationSource,
+            @Value("${app.portfolio-mode:false}") boolean portfolioMode) throws Exception {
+        http.authorizeHttpRequests(rules -> {
+                if (portfolioMode) {
+                    rules.requestMatchers(
+                            "/api/v1/auth/**",
+                            "/api/v1/web/auth/**",
+                            "/api/v1/web/account/**",
+                            "/api/v1/web/admin/**",
+                            "/api/v1/stations/**").denyAll();
+                    rules.requestMatchers(HttpMethod.GET,
+                            "/api/v1/portfolio/stations/gacha",
+                            "/api/v1/portfolio/stations/*").permitAll();
+                    rules.requestMatchers(HttpMethod.POST,
+                            "/api/v1/portfolio/stations/location-get").permitAll();
+                }
+                rules
                 .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                 .requestMatchers(HttpMethod.GET,
                         "/actuator/health",
@@ -82,7 +97,8 @@ public class ApiSecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/v1/stations/location-get").authenticated()
                 .requestMatchers(HttpMethod.PUT, "/api/v1/auth/account/display-name").authenticated()
                 // Do not leave legacy userId-based APIs reachable, even with a future session.
-                .anyRequest().denyAll())
+                .anyRequest().denyAll();
+            })
             .formLogin(AbstractHttpConfigurer::disable)
             .httpBasic(AbstractHttpConfigurer::disable)
             .logout(AbstractHttpConfigurer::disable)
@@ -101,7 +117,8 @@ public class ApiSecurityConfig {
                     "/api/v1/auth/password-reset/confirm",
                     "/api/v1/auth/password/change",
                     "/api/v1/auth/account/delete",
-                    "/api/v1/stations/location-get"))
+                    "/api/v1/stations/location-get",
+                    "/api/v1/portfolio/stations/location-get"))
             .cors(cors -> cors.configurationSource(corsConfigurationSource))
             .securityContext(context -> context.requireExplicitSave(true))
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))

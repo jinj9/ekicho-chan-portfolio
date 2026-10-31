@@ -4,8 +4,10 @@ import ImageDialog from "./ImageDialog";
 import { useMediaQuery } from 'react-responsive';
 import Loading from "./Loading";
 import { Box } from '@mui/material';
-import { AxiosResponse } from 'axios';
 import apiClient from '../api/apiClient';
+import { PORTFOLIO_MODE } from '../portfolioMode';
+import { drawPortfolioStation } from '../api/portfolioApi';
+import { recordPortfolioObtained } from '../portfolio/storage';
 
 type stationMaster = {
   id: number | undefined,
@@ -33,7 +35,7 @@ const initStationMaster = {
   isObtained: false,
 };
 
-/** 
+/**
  * えきちょーちゃんガチャのページ
  *  */
 const GachaGetPage = () => {
@@ -51,8 +53,13 @@ const GachaGetPage = () => {
     setIsLoading(true);
     const getStationData = async () => {
       try {
-        const response: AxiosResponse<stationMaster> = await apiClient.get('/api/v1/web/stations/gacha');
-        setStationData(response.data);
+        const data = PORTFOLIO_MODE
+          ? await drawPortfolioStation()
+          : (await apiClient.get<stationMaster>('/api/v1/web/stations/gacha')).data;
+        if (PORTFOLIO_MODE && data.id !== undefined) {
+          data.isObtained = recordPortfolioObtained(data.id, 'GACHA');
+        }
+        setStationData(data);
         setIsDialogOpen(true);
         setTimeout(
           () => {

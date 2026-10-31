@@ -48,6 +48,70 @@ public class StationMasterService {
 		this.obtainedImageDataRepository = obtainedImageDataRepository;
 	}
 
+	/** ガチャ結果を返す。ポートフォリオ用のためユーザー別獲得履歴は保存しない。 */
+	public StationMasterResponse getPortfolioGacha() {
+		String appearanceRateCd = getAppearanceRateCd();
+		List<StationMasterEntity> stations = stationMasterRepository
+				.getStationMasterEntityListByAppearanceRataCd(appearanceRateCd);
+		if (stations.isEmpty()) {
+			throw new StationDataNotFoundException("抽選対象の駅データがありません。");
+		}
+		StationMasterEntity station = stations.get(new Random().nextInt(stations.size()));
+		return toPortfolioResponse(station, false);
+	}
+
+	/** 位置情報を検証して駅を返す。ポートフォリオ用のため獲得履歴は保存しない。 */
+	public StationMasterResponse getPortfolioLocation(LocationGetRequest request)
+			throws BadRequestException, IOException {
+		if (request.getStationCd() == null || request.getLatitude() == null || request.getLongitude() == null) {
+			throw new BadRequestException("駅と現在位置を指定してください。");
+		}
+		StationMasterEntity station = stationMasterRepository
+				.getStationMasterEntityByStationCd(request.getStationCd());
+		if (station == null) {
+			throw new StationDataNotFoundException("駅データが見つかりません。");
+		}
+		if (station.getLatitude() == null || station.getLongitude() == null) {
+			throw new StationDataNotFoundException(
+					station.getStationName() + "駅:データベースに緯度経度情報が登録されていません。");
+		}
+		double distance = getDistanceByLatitudeLongitude(request.getLatitude(), request.getLongitude(),
+				station.getLatitude(), station.getLongitude());
+		if (Double.compare(distance, Enum.SUCCESSDISTANCE) > 0) {
+			throw new BadRequestException("位置情報によるGETができませんでした。\n現在位置と駅の距離：約"
+					+ Math.round(distance) + "m");
+		}
+		return toPortfolioResponse(station, true);
+	}
+
+	/** localStorageにある駅IDを表示用データへ復元する。 */
+	public StationMasterResponse getPortfolioStation(int stationId, boolean specialImage) {
+		StationMasterEntity station = stationMasterRepository.findById(stationId)
+				.orElseThrow(() -> new StationDataNotFoundException("駅データが見つかりません。"));
+		return toPortfolioResponse(station, specialImage);
+	}
+
+	private StationMasterResponse toPortfolioResponse(StationMasterEntity station, boolean specialImage) {
+		ImageEntity image = imageRepository.getImageData(station.getStationCd(), specialImage);
+		if (image == null || image.getImageData() == null || image.getImageData().length == 0) {
+			throw new StationDataNotFoundException("画像データが未登録です。");
+		}
+		StationMasterResponse response = new StationMasterResponse();
+		response.setId(station.getId());
+		response.setStationCd(station.getStationCd());
+		response.setStationName(station.getStationName());
+		response.setStationEnglishName(station.getStationEnglishName());
+		response.setLatitude(station.getLatitude());
+		response.setLongitude(station.getLongitude());
+		response.setPrefectureCd(station.getPrefectureCd());
+		response.setLocationName(Enum.PREFECTURE.getByCode(station.getPrefectureCd()));
+		response.setAppearanceRateCd(station.getAppearanceRateCd());
+		response.setStationInformationText(station.getStationInformationText());
+		response.setImageData(Base64.getEncoder().encodeToString(image.getImageData()));
+		response.setIsObtained(false);
+		return response;
+	}
+
 	/**
 	 * えきちょーちゃんガチャ実行
 	 * 

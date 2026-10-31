@@ -1,6 +1,7 @@
 import React from 'react';
-import { Box, Grid } from '@mui/material';
+import { Alert, Box, Grid } from '@mui/material';
 import { useAuthContext } from '../context/AuthContext';
+import { PORTFOLIO_MODE } from '../portfolioMode';
 
 /** 
  * ホーム画面
@@ -19,6 +20,12 @@ const HomePage = () => {
           display: 'block',
           textAlign: 'center'
         }}>
+        {PORTFOLIO_MODE && (
+          <Alert severity="info" sx={{ maxWidth: 600, mx: 'auto', mb: 2, textAlign: 'left' }}>
+            公開デモではユーザー登録を行いません。獲得データはこのブラウザにのみ保存され、
+            ブラウザのデータを削除すると失われます。
+          </Alert>
+        )}
         {
           loggedUserInfo ? (
             <h1>{`ようこそ！${loggedUserInfo.displayName}さん！`}</h1>
