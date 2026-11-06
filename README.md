@@ -4,7 +4,7 @@
 
 Spring BootとPostgreSQLで共通APIを構築し、React WebとJetpack ComposeのAndroidアプリから利用します。ユーザー登録、メール確認、セッション認証、ロール制御、Docker、AWSへのデプロイまでを実装したポートフォリオです。
 
-![AWS architecture](docs/ekicho-chan-aws-architecture.png)
+![AWS architecture](docs/ekicho-chan-aws-architecture_draw.png)
 
 ## 主な機能
 
