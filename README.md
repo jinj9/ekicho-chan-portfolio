@@ -119,8 +119,6 @@ npm test -- --watchAll=false
 - ログイン連続失敗制御とレート制限
 - 本番DBのRDS分離とバックアップ自動化
 
-詳細は [アプリケーション仕様書](docs/EKICHO_CHAN_PORTFOLIO_SPECIFICATION.md) を参照してください。
-
 ## License
 
 ライセンスは公開前に決定予定です。現時点で、明示的な許可なくコードや画像を再利用することはできません。
